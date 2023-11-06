@@ -1,5 +1,6 @@
 import turtle as tl
 import classes
+from Server import Server_run
 import time
 import socket
 window = tl.Screen()
@@ -23,6 +24,8 @@ play_solo_btn.lable("solo",'red',30)
 def solo_play(x,y):
     window.clear()
 def Multiplayer_play(x,y):
+    Server = Server_run()
+    Server.start_server()
     window.clear()
 
 
