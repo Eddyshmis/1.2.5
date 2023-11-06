@@ -7,6 +7,7 @@ class Button():
         self.shape = shape
         self.turtle = tl.Turtle()
 
+        tl.tracer(0,0)
 
         self.turtle.speed(0)
         self.turtle.color(color)
@@ -14,11 +15,15 @@ class Button():
         self.turtle.up()
         self.turtle.shape(f"{shape}")
         self.turtle.hideturtle()
+        tl.tracer(1,0)
     def place(self,x:float = 0,y:float = 0):
+        tl.tracer(0,0)
         self.x = x
         self.y = y
+        self.turtle.hideturtle()
         self.turtle.goto(x,y)
         self.turtle.showturtle()
+        tl.tracer(1,0)
     def click_on(self,func):
         '''add x,y parameters for the inputed function
         \ndef print_test(x,y):

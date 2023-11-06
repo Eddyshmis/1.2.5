@@ -9,7 +9,6 @@ player = tl.Turtle()
 size_multiplier = 6
 width_window,height_window = window.screensize()
 
-window.tracer(0,0)
 
 
 play_solo_btn = classes.Button(size_multiplier,"square")
@@ -26,10 +25,11 @@ def solo_play(x,y):
 def Multiplayer_play(x,y):
     window.clear()
 
+
 play_solo_btn.click_on(solo_play)
 play_multiplayer_btn.click_on(Multiplayer_play)
 
 
 
-window.update()
+
 window.mainloop()
