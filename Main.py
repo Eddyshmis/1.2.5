@@ -30,17 +30,35 @@ play_solo_btn.lable("solo",'red',30)
 
 def solo_play(x,y):
     window.clear()
+    def check_pos_ship(player):
+        ship_pos = 0
+        if player.xcor() >= -350 and player.xcor() <= -175:
+            ship_pos = 1
+            print("ship pos:" + str(ship_pos))
+        elif player.xcor() >= -175 and player.xcor() <= 0:
+            ship_pos = 2
+            print("ship pos:" + str(ship_pos))
+        elif player.xcor() >= 0 and player.xcor() <= 175:
+            ship_pos = 3
+            print("ship pos:" + str(ship_pos))
+        elif player.xcor() >= 175 and player.xcor() <= 350:
+            ship_pos = 4
+            print("ship pos:" + str(ship_pos))
     def right(player):
+
         if (player.xcor()+175) <= 262.5:
             tl.onkey(None,"Right")
             player.goto(player.xcor()+175,0)
             tl.onkey(partial(right,player),"Right")
+            check_pos_ship(player)
 
     def left(player):
+
         if (player.xcor()-175) >= -262.5:
             tl.onkey(None,"Left")
             player.goto(player.xcor()-175,0)
             tl.onkey(partial(left,player),"Left")
+            check_pos_ship(player)
 
     
         
