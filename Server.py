@@ -35,8 +35,9 @@ class Server_run:
             if msg == "!Connected":
                 print(f"[{addr}] {msg}")
                 start_game = True
-                while start_game:
-                    
+                conn.send(str("!clientListen").encode(self.FORMAT))
+                # while start_game:
+
             if msg == "!eatshit":
                 print("killyourself")
 
