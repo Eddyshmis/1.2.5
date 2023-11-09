@@ -82,7 +82,7 @@ def solo_play(x,y):
         set_up_man.goto(set_up_man.xcor(),(height_window/4))
         set_up_man.up()
         
-        set_up_man.goto(0,0)
+        set_up_man.hideturtle()
 
         for i in range(3):
             setup_crew.append(tl.Turtle())
