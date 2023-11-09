@@ -34,6 +34,9 @@ class Server_run:
             print(msg)
             if msg == "!Connected":
                 print(f"[{addr}] {msg}")
+                start_game = True
+                while start_game:
+                    
             if msg == "!eatshit":
                 print("killyourself")
 

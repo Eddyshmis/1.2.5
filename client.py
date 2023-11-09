@@ -30,7 +30,7 @@ class Network:
         print("Player tried to connected to: ",self.addr)
         self.send("!Connected")
         Server_msg = self.client.recv(2048).decode(self.FORMAT)
-        return int(Server_msg)
+        return Server_msg
     def get_pos(self):
         self.send('!GetPOS')
         Server_msg_pos = self.client.recv(2048).decode(self.FORMAT)
@@ -52,5 +52,5 @@ class Network:
             self.player_2_pos = self.client.recv(12).decode(self.FORMAT)
             print(self.player_2_pos)
 test_network = Network()
-test_network.connect()
+print(test_network.connect())
 test_network.test_messages()

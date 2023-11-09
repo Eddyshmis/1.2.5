@@ -36,6 +36,7 @@ def solo_play(x,y):
     def left(player):
         if (player.xcor()-175) >= -262.5:
             player.goto(player.xcor()-175,0)
+
     
         
     def set_up_solo(x,y):
@@ -183,6 +184,7 @@ def Multiplayer_play(x,y):
         
 
     thread = threading.Thread(target=Server.start_server)
+    thread.start()
     make_server_btn = classes.Button(size_multiplier,"square")
     make_server_btn.place()
     make_server_btn.lable("PLAY","red")
