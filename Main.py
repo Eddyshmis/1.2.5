@@ -32,10 +32,15 @@ def solo_play(x,y):
     window.clear()
     def right(player):
         if (player.xcor()+175) <= 262.5:
+            tl.onkey(None,"Right")
             player.goto(player.xcor()+175,0)
+            tl.onkey(partial(right,player),"Right")
+
     def left(player):
         if (player.xcor()-175) >= -262.5:
+            tl.onkey(None,"Left")
             player.goto(player.xcor()-175,0)
+            tl.onkey(partial(left,player),"Left")
 
     
         
