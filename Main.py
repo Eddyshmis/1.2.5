@@ -4,7 +4,6 @@ import threading
 from functools import partial
 from Server import Server_run
 import time
-import socket
 window = tl.Screen()
 
 
