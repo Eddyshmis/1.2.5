@@ -12,7 +12,7 @@ class Server_run:
         self.ADDR = (self.SERVER,self.PORT)
         self.FORMAT = 'utf-8'
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
-
+        self.current_ship_pos = None
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
@@ -21,7 +21,9 @@ class Server_run:
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         print(self.SERVER)
 
-    
+    def send_pos(self,conn):
+        conn.send(str("").encode(self.FORMAT))
+
 
 
     def handle_client(self,conn,addr):
@@ -35,8 +37,12 @@ class Server_run:
             if msg == "!Connected":
                 print(f"[{addr}] {msg}")
                 start_game = True
-                conn.send(str("!clientListen").encode(self.FORMAT))
-                # while start_game:
+                
+                while start_game:
+                    
+                    # conn.send(str("").encode(self.FORMAT))
+                    msg = conn.recv(2048).decode(self.FORMAT)
+                    self.current_ship_pos = msg
 
             if msg == "!eatshit":
                 print("killyourself")

@@ -1,6 +1,7 @@
 import turtle as tl
 import classes
 import threading
+from Threading_class import ThreadWithReturnValue
 from functools import partial
 from Server import Server_run
 import time
@@ -49,16 +50,21 @@ def solo_play(x,y):
 
         if (player.xcor()+175) <= 262.5:
             tl.onkey(None,"Right")
+            tl.onkey(None,"Left")
             player.goto(player.xcor()+175,0)
+            print(player.xcor())
             tl.onkey(partial(right,player),"Right")
+            tl.onkey(partial(left,player),"Left")
             check_pos_ship(player)
 
     def left(player):
 
         if (player.xcor()-175) >= -262.5:
             tl.onkey(None,"Left")
+            tl.onkey(None,"Right")
             player.goto(player.xcor()-175,0)
             tl.onkey(partial(left,player),"Left")
+            tl.onkey(partial(right,player),"Right")
             check_pos_ship(player)
 
     
@@ -142,10 +148,13 @@ def solo_play(x,y):
     start_game_solo_btn.click_on(set_up_solo)
     
 def Multiplayer_play(x,y):
-    Server = Server_run()
     window.clear()
+    window.title("client_protag")
+    import client
+    cl = client.Network()
     def check_pos_ship(player):
         ship_pos = 0
+        
         if player.xcor() >= -350 and player.xcor() <= -175:
             ship_pos = 1
             print("ship pos:" + str(ship_pos))
@@ -158,6 +167,9 @@ def Multiplayer_play(x,y):
         elif player.xcor() >= 175 and player.xcor() <= 350:
             ship_pos = 4
             print("ship pos:" + str(ship_pos))
+        cl.start_sending_pos(ship_pos)
+        
+        
     def right(player):
 
         if (player.xcor()+175) <= 262.5:
@@ -240,35 +252,41 @@ def Multiplayer_play(x,y):
         tl.onkey(partial(left,player),"Left")
 
         
-        
+    
 
-        
+    
 
-    thread = threading.Thread(target=Server.start_server)
+    thread = threading.Thread(target=cl.connect)
     thread.start()
-    make_server_btn = classes.Button(size_multiplier,"square")
-    make_server_btn.place()
-    make_server_btn.lable("PLAY","red")
-    make_server_btn.click_on(Set_up_multiplayer)
+    play_btn = classes.Button(size_multiplier,"square")
+    play_btn.place()
+    play_btn.lable("PLAY","red")
+    play_btn.click_on(Set_up_multiplayer)
 
 def connect_play(x,y):
     window.clear()
-    import client
+    window.title("server_anti")
+    Server = Server_run()
+    def check_pos_ship_lan(player):
+        # print(type(Server.current_ship_pos))
+        # player.forward(100)
+        try:
+            ship_pos = int(Server.current_ship_pos)
+        except:
+            ship_pos = Server.current_ship_pos
+        
 
-    def get_msg():
-        cl = client.Network()
-        msg = cl.connect()
-        return get_msg
-    def check_pos_ship_lan():
-        iteration_counter = 0
-        ship_pos = 0
-        if iteration_counter == 0:
-            
-            thread = threading.Thread(target=get_msg())
-            thread.start()
-            iteration_counter += 1
-        if msg == "!clientListen":
-            print("works")
+        if ship_pos == 1 or ship_pos == None:
+            player.goto(-262.5,0)
+        elif ship_pos == 2:
+            player.goto(-87.5,0)
+        elif ship_pos == 3:
+            player.goto(87.5,0)
+        elif ship_pos == 4:
+            player.goto(262.5,0)
+        tl.ontimer(partial(check_pos_ship_lan,player),1)
+
+
         
 
     
@@ -334,7 +352,7 @@ def connect_play(x,y):
         # player.goto(-87.5,0)
         # player.goto(87.5,0)
         # player.goto(262.5,0)
-        tl.ontimer(check_pos_ship_lan,1)
+        tl.ontimer(partial(check_pos_ship_lan,player),1)
         
 
         
@@ -343,12 +361,12 @@ def connect_play(x,y):
         
 
         
-
-    
-    connect_play_start_btn = classes.Button(size_multiplier,"square")
-    connect_play_start_btn.place()
-    connect_play_start_btn.lable("PLAY","red")
-    connect_play_start_btn.click_on(set_up_solo)
+    thread = threading.Thread(target=Server.start_server)
+    thread.start()
+    play_btn = classes.Button(size_multiplier,"square")
+    play_btn.place()
+    play_btn.lable("PLAY","red")
+    play_btn.click_on(set_up_solo)
 
 
 play_solo_btn.click_on(solo_play)
