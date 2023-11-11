@@ -10,7 +10,8 @@ class Network:
         self.FORMAT = 'utf-8'
         self.addr = (self.server, self.port)
         self.sent = 0
-        self.player_2_pos = ""
+        self.server_msg = None
+        self.counter = 0
         
         
 
@@ -24,12 +25,23 @@ class Network:
             # return self.client.recv(2048)
         except socket.error as e:
             print(e)
-    def start_sending_pos(self,pos):
+    def receive_data(self):
+        try:
+            return self.client.recv(12).decode(self.FORMAT)
+        except:
+            return None
+
+
+    def send_and_receive(self,pos):
+        '''sends the pos of ship and sets server_msg as the received data'''
         self.send(str(pos))
+        # must set setblocking as False or it will wait for message
+        self.server_msg = self.receive_data()
     
     def connect(self):
         self.client.connect(self.addr)
-        print("Player tried to connected to: ",self.addr)
+        self.client.setblocking(False)
+        print("Player connected to: ",self.addr)
         self.send("!Connected")
         # Server_msg = self.client.recv(2048).decode(self.FORMAT)
         
@@ -45,6 +57,7 @@ class Network:
 
     def test_messages(self):
         self.send('!eatshit')
+    
     def send_pos(self,cords):
         print(type(cords) )
         print("count: ",len(cords),cords )

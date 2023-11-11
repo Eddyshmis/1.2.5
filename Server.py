@@ -17,6 +17,7 @@ class Server_run:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind(self.ADDR)
         self.server.listen()
+        self.meteorite = [0,0,0,0]
         
         print(f"[LISTENING] Server is listening on {self.SERVER}")
         print(self.SERVER)
@@ -27,22 +28,48 @@ class Server_run:
 
 
     def handle_client(self,conn,addr):
+        counter = 0
+        conn.setblocking(False)
         
         print(f"[NEW CONNECTION] {addr} connected.")
         connected = True
         while connected:
-            msg = conn.recv(2048).decode(self.FORMAT)
+            
+            connected_msg = conn.recv(2048).decode(self.FORMAT)
+            
             # conn.send(str(self.currentId).encode(self.FORMAT))
-            print(msg)
-            if msg == "!Connected":
-                print(f"[{addr}] {msg}")
+            print(connected_msg)
+            error_counter = 0
+            sent = 0
+            if connected_msg == "!Connected":
+                print(f"[{addr}] {connected_msg}")
                 start_game = True
                 
                 while start_game:
                     
                     # conn.send(str("").encode(self.FORMAT))
-                    msg = conn.recv(2048).decode(self.FORMAT)
-                    self.current_ship_pos = msg
+                    
+                    try:
+                        msg = conn.recv(2048).decode(self.FORMAT)
+                    except:
+                        msg = None
+                    
+                    try:
+                        conn.send(str(f"{self.meteorite}").encode(self.FORMAT))
+                        sent += 1
+                        print("sent:" + str(sent))
+                    except Exception as e:
+                        if error_counter == 0:
+                            print(e)
+                            print("sent:" + str(sent))
+                            error_counter += 1
+                    
+                    if not msg: 
+                        pass
+                    else:
+                        self.current_ship_pos = msg
+
+                        
 
             if msg == "!eatshit":
                 print("killyourself")

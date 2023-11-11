@@ -4,6 +4,7 @@ import threading
 from Threading_class import ThreadWithReturnValue
 from functools import partial
 from Server import Server_run
+from random import randint
 import time
 window = tl.Screen()
 
@@ -34,30 +35,48 @@ Connect_play_btn.lable("connect play","red",size=25)
 def solo_play(x,y):
     window.clear()
     window.addshape(meteorite_img)
-    def check_pos_ship(player):
+    meteorite_crew = []
+    def check_pos_ship(player,meteorite_crew):
         ship_pos = 0
         if player.xcor() >= -350 and player.xcor() <= -175:
             ship_pos = 1
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
         elif player.xcor() >= -175 and player.xcor() <= 0:
             ship_pos = 2
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
         elif player.xcor() >= 0 and player.xcor() <= 175:
             ship_pos = 3
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
         elif player.xcor() >= 175 and player.xcor() <= 350:
             ship_pos = 4
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
+        meteortie = meteorite_crew[randint(0,3)]
+        # meteortie.goto(meteortie.xcor(),meteortie.ycor() - 840)
+        for _ in range(83):
+            meteortie.forward(10)        
+            if meteortie.xcor() + 10 >= player.xcor() and meteortie.xcor() - 10 <= player.xcor() :
+                if meteortie.ycor() + 10 >= player.ycor() and meteortie.ycor() - 10 <= player.ycor() :
+                    player.hideturtle()
+                    player.color("red")
+                    player.write("GAME OVER!",False,"center",("Arial",40,"normal"))
+            if meteortie.ycor() <= -420:
+                meteortie.hideturtle()
+                meteortie.goto(meteortie.xcor(),420)
+                meteortie.showturtle()
+
+
+        tl.ontimer(partial(check_pos_ship,player,meteorite_crew),0)
+        
+        
     def right(player):
 
         if (player.xcor()+175) <= 262.5:
             tl.onkey(None,"Right")
             tl.onkey(None,"Left")
             player.goto(player.xcor()+175,0)
-            print(player.xcor())
             tl.onkey(partial(right,player),"Right")
             tl.onkey(partial(left,player),"Left")
-            check_pos_ship(player)
+            # check_pos_ship(player,meteorite_crew)
 
     def left(player):
 
@@ -67,7 +86,7 @@ def solo_play(x,y):
             player.goto(player.xcor()-175,0)
             tl.onkey(partial(left,player),"Left")
             tl.onkey(partial(right,player),"Right")
-            check_pos_ship(player)
+            # check_pos_ship(player,meteorite_crew)
 
     
         
@@ -108,15 +127,11 @@ def solo_play(x,y):
             count_turtle += 1
             turtle.seth(90)
             if count_turtle == 1:
-                print(-width_window/2)
                 turtle.goto(-width_window/4,height_setup)
-                print(count_turtle,turtle.xcor())
             elif count_turtle == 2:
                 turtle.goto(-width_window + (width_window),height_setup)
-                print(count_turtle,turtle.xcor())
             elif count_turtle == 3:
                 turtle.goto(width_window/4,height_setup)
-                print(count_turtle,turtle.xcor())
         for turtle in setup_crew:
             turtle.down()
             turtle.goto(turtle.xcor(),turtle.ycor() + 1000)
@@ -128,12 +143,34 @@ def solo_play(x,y):
         player.seth(90)
         player.up()
 
+        count_turtle = 0
+        for _ in range(4):
+            meteorite_crew.append(tl.Turtle())
+        for turtle in meteorite_crew:
+            turtle.up()
+            turtle.pensize(10)
+            turtle.color("Blue")
+            turtle.speed(10)
+            turtle.shape(meteorite_img)
+            count_turtle += 1
+            turtle.seth(270)
+            if count_turtle == 1:
+                turtle.goto(-262.5,420)
+            elif count_turtle == 2:
+                turtle.goto(-87.5,420)
+            elif count_turtle == 3:
+                turtle.goto(87.5,420)
+            elif count_turtle == 4:
+                turtle.goto(262.5,420)
+            turtle.speed(3)
+
         player.goto(-262.5,0)
         # player.goto(-87.5,0)
         # player.goto(87.5,0)
         # player.goto(262.5,0)
         tl.onkey(partial(right,player),"Right")
         tl.onkey(partial(left,player),"Left")
+        tl.ontimer(partial(check_pos_ship,player,meteorite_crew),0)
 
 
         
@@ -159,22 +196,30 @@ def Multiplayer_play(x,y):
     # def check_meteorites():
 
 
-    def check_pos_ship(player):
+    def check_pos_ship(player,meteorite_crew:list):
         ship_pos = 0
         
         if player.xcor() >= -350 and player.xcor() <= -175:
             ship_pos = 1
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
         elif player.xcor() >= -175 and player.xcor() <= 0:
             ship_pos = 2
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
         elif player.xcor() >= 0 and player.xcor() <= 175:
             ship_pos = 3
-            print("ship pos:" + str(ship_pos))
+            # print("ship pos:" + str(ship_pos))
         elif player.xcor() >= 175 and player.xcor() <= 350:
             ship_pos = 4
-            print("ship pos:" + str(ship_pos))
-        cl.start_sending_pos(ship_pos)
+            # print("ship pos:" + str(ship_pos))
+        cl.send_and_receive(ship_pos)
+
+        meteorite_pos = eval(cl.server_msg)
+        if meteorite_pos[0] == 1:
+            meteorite_crew[0].forward(400)
+
+        
+        tl.ontimer(partial(check_pos_ship,player,meteorite_crew),1)
+        
         
         
     def right(player):
@@ -183,7 +228,7 @@ def Multiplayer_play(x,y):
             tl.onkey(None,"Right")
             player.goto(player.xcor()+175,0)
             tl.onkey(partial(right,player),"Right")
-            check_pos_ship(player)
+            # check_pos_ship(player)
 
     def left(player):
 
@@ -191,11 +236,12 @@ def Multiplayer_play(x,y):
             tl.onkey(None,"Left")
             player.goto(player.xcor()-175,0)
             tl.onkey(partial(left,player),"Left")
-            check_pos_ship(player)
+            # check_pos_ship(player)
     
 
     def Set_up_multiplayer(x,y):
         setup_crew = []
+        meteorite_crew = []
         offset_sides = 7
         print("play pressed")
         window.clear()
@@ -231,15 +277,11 @@ def Multiplayer_play(x,y):
             count_turtle += 1
             turtle.seth(90)
             if count_turtle == 1:
-                print(-width_window/2)
                 turtle.goto(-width_window/4,height_setup)
-                print(count_turtle,turtle.xcor())
             elif count_turtle == 2:
                 turtle.goto(-width_window + (width_window),height_setup)
-                print(count_turtle,turtle.xcor())
             elif count_turtle == 3:
                 turtle.goto(width_window/4,height_setup)
-                print(count_turtle,turtle.xcor())
         for turtle in setup_crew:
             turtle.down()
             turtle.goto(turtle.xcor(),turtle.ycor() + 1000)
@@ -251,12 +293,34 @@ def Multiplayer_play(x,y):
         player.seth(90)
         player.up()
 
+        count_turtle = 0
+        for _ in range(4):
+            meteorite_crew.append(tl.Turtle())
+        for turtle in meteorite_crew:
+            turtle.up()
+            turtle.pensize(10)
+            turtle.color("Blue")
+            turtle.speed(10)
+            turtle.shape(meteorite_img)
+            count_turtle += 1
+            turtle.seth(270)
+            if count_turtle == 1:
+                turtle.goto(-262.5,420)
+            elif count_turtle == 2:
+                turtle.goto(-87.5,420)
+            elif count_turtle == 3:
+                turtle.goto(87.5,420)
+            elif count_turtle == 4:
+                turtle.goto(262.5,420)
+            turtle.speed(3)
+
         player.goto(-262.5,0)
         # player.goto(-87.5,0)
         # player.goto(87.5,0)
         # player.goto(262.5,0)
         tl.onkey(partial(right,player),"Right")
         tl.onkey(partial(left,player),"Left")
+        tl.ontimer(partial(check_pos_ship,player,meteorite_crew),0)
 
         
     
@@ -277,14 +341,15 @@ def connect_play(x,y):
     Server = Server_run()
 
     def meteorite(pos:int,crew:list):
-        crew[pos].forward(200)
+        tl.onkey(None,f"{pos + 1}")
+        Server.meteorite[pos] = 1
+        crew[pos].forward(400)
+        tl.onkey(partial(meteorite,pos,crew),pos+1)
         
 
 
 
     def check_pos_ship_lan(player):
-        # print(type(Server.current_ship_pos))
-        # player.forward(100)
         try:
             ship_pos = int(Server.current_ship_pos)
         except:
@@ -344,15 +409,12 @@ def connect_play(x,y):
             count_turtle += 1
             turtle.seth(90)
             if count_turtle == 1:
-                print(-width_window/2)
                 turtle.goto(-width_window/4,height_setup)
-                print(count_turtle,turtle.xcor())
             elif count_turtle == 2:
                 turtle.goto(-width_window + (width_window),height_setup)
-                print(count_turtle,turtle.xcor())
             elif count_turtle == 3:
                 turtle.goto(width_window/4,height_setup)
-                print(count_turtle,turtle.xcor())
+            
         for turtle in setup_crew:
             turtle.down()
             turtle.goto(turtle.xcor(),turtle.ycor() + 1000)
